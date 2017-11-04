@@ -64,6 +64,9 @@ void ssd1306_numdec_font6x8(uint16_t num);
 void ssd1306_numdecp_font6x8(uint16_t num);
 void ssd1306_draw_bmp(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t bitmap[]);
 
+void ssd1306_off(void);
+void ssd1306_on(void);
+
 // ============================================================================
 
 #endif

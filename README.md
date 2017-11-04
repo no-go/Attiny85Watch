@@ -6,20 +6,25 @@ attiny85 with white LED and 128x32 i2c oled display - 2 buttons for set hours an
 
 ![Circuit](img/circuit.jpg)
 
-# todo
+# done
 
-- set to 1Mhz to save power
-- set hours/minutes
-- switch LED on/off
-- button on / automatic off
+ -  set to 1Mhz to save power (ok)
+ -  set hours/minutes (ok)
+ -  switch LED on/off (short <1sec press toggles LED)
+ -  button on / automatic off (ok)
 
-- test about time accurency
-- test lipo life time
-- big and flapping numbers
-- power bar
-- nice circuit / more details
-- programming how-to
-- watchcase, chassis, design
+# to do
+
+ -  power bar
+ -  test about time accurency
+ -  test lipo life time
+
+# future steps
+
+ -  big and flapping numbers
+ -  nice circuit / more details
+ -  programming how-to
+ -  watchcase, chassis, design
 
 # Thanks to ..
 

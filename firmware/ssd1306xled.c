@@ -235,4 +235,13 @@ void ssd1306_draw_bmp(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint
 	}
 }
 
+
+void ssd1306_off(void) {
+  ssd1306_send_command(0xAE);
+}
+
+void ssd1306_on(void) {
+  ssd1306_send_command(0xAF);  
+}
+
 // ============================================================================
