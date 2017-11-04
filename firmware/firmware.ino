@@ -104,16 +104,6 @@ inline void bigDigital2() {
   myFont2(52, 0,t);
 }
 
-void readVcc() {
-  // Read 1.1V reference against Vcc
-  ADMUX = (0<<REFS0) | (12<<MUX0);
-  delay(2);
-  ADCSRA |= (1<<ADSC); // Convert
-  while (bit_is_set(ADCSRA,ADSC));
-  vcc = ADCW;
-  vcc = 1125300L / vcc; 
-}
-
 inline void ticking() {
   tick++;
   if (tick > 3) {
@@ -150,8 +140,17 @@ void setup() {
 
 void loop() {
   ticking();
-  delay(246);
-  readVcc();
+
+  delay(186);
+  //delay(238);
+  
+  // read vcc
+  ADMUX = (0<<REFS0) | (12<<MUX0);
+  delay(10);
+  ADCSRA |= (1<<ADSC); // Convert
+  while (bit_is_set(ADCSRA,ADSC));
+  vcc = ADCW;
+  vcc = 1125300L / vcc; 
 
   bigDigital2();
   
@@ -160,18 +159,6 @@ void loop() {
   ssd1306_string(" mV");
   
   //ssd1306_draw(0, 0, 16, 32, zz0);
-  
-  /*
-  ssd1306_setpos(20,1);
-  if (hours < 10) ssd1306_char('0');
-  ssd1306_numdec(hours);
-  ssd1306_char(':');
-  if (minutes < 10) ssd1306_char('0');
-  ssd1306_numdec(minutes);
-  ssd1306_char(':');
-  if (seconds < 10) ssd1306_char('0');
-  ssd1306_numdec(seconds);
-  */
   
   if (digitalRead(HOURPIN) == LOW) {
     ledon = !ledon;
@@ -194,8 +181,8 @@ void loop() {
   if (digitalRead(MINUPIN) == LOW) {
     onsec = 0;
     ssd1306_on();
-    delay(500);
-    tick+=2;
+    delay(250);
+    tick+=1;
     if (digitalRead(MINUPIN) == LOW) {
       minutes = (minutes+1)%60;
       seconds = 0;
