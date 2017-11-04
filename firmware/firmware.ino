@@ -2,13 +2,12 @@
 #include "ssd1306xled.c"
 #include "ssd1306xled8x16.h"
 #include "ssd1306xled8x16.c"
-#include "myNumbers.h"
 #include "num2str.h"
 #include "num2str.c"
 
 #define LEDPIN   1
-#define HOURPIN  4
-#define MINUPIN  3
+#define BUTTON1  4
+#define BUTTON2  3
 
 #define OFFSEC   5
 
@@ -22,7 +21,7 @@ bool ledon = false;
 int vcc = 3900;
 
 
-void myFont2(byte x, short y, byte b) {
+void myFont(byte x, short y, byte b) {
   if (b == 0) {
     ssd1306_string_font8x16xy(x, y, "0");
   } else if (b == 1) {
@@ -46,62 +45,21 @@ void myFont2(byte x, short y, byte b) {
   }
 }
 
-void myFont(byte x, short y, byte b) {
-  if (b == 0) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz0);
-  } else if (b == 1) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz1);
-  } else if (b == 2) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz2);
-  } else if (b == 3) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz3);
-  } else if (b == 4) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz4);
-  } else if (b == 5) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz5);
-  } else if (b == 6) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz6);
-  } else if (b == 7) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz7);
-  } else if (b == 8) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz8);
-  } else if (b == 9) {
-    ssd1306_draw_bmp(x, y, 16, 32, zz9);
-  }
-}
-
 inline void bigDigital() {
   int t = hours/10;
   myFont(0, 0,t);
   t = hours - t*10;
-  myFont(16, 0,t);
+  myFont(8, 0,t);
   
   t = minutes/10;
-  myFont(25, 0,t);
+  myFont(22, 0,t);
   t = minutes - t*10;
-  myFont(41, 0,t);
+  myFont(30, 0,t);
 
   t = seconds/10;
-  myFont(50, 0,t);
+  myFont(44, 0,t);
   t = seconds - t*10;
-  myFont(66, 0,t);
-}
-
-inline void bigDigital2() {
-  int t = hours/10;
-  myFont2(0, 0,t);
-  t = hours - t*10;
-  myFont2(8, 0,t);
-  
-  t = minutes/10;
-  myFont2(22, 0,t);
-  t = minutes - t*10;
-  myFont2(30, 0,t);
-
-  t = seconds/10;
-  myFont2(44, 0,t);
-  t = seconds - t*10;
-  myFont2(52, 0,t);
+  myFont(52, 0,t);
 }
 
 inline void ticking() {
@@ -128,8 +86,8 @@ inline void ticking() {
 }
 
 void setup() {
-  pinMode(HOURPIN, INPUT_PULLUP);
-  pinMode(MINUPIN, INPUT_PULLUP);
+  pinMode(BUTTON1, INPUT_PULLUP);
+  pinMode(BUTTON2, INPUT_PULLUP);
   pinMode(LEDPIN,  OUTPUT);
   
   ssd1306_init();
@@ -141,8 +99,7 @@ void setup() {
 void loop() {
   ticking();
 
-  delay(186);
-  //delay(238);
+  delay(168);
   
   // read vcc
   ADMUX = (0<<REFS0) | (12<<MUX0);
@@ -152,40 +109,47 @@ void loop() {
   vcc = ADCW;
   vcc = 1125300L / vcc; 
 
-  bigDigital2();
+  bigDigital();
   
   ssd1306_setpos(0,3);
   ssd1306_numdec(vcc);  
   ssd1306_string(" mV");
   
-  //ssd1306_draw(0, 0, 16, 32, zz0);
-  
-  if (digitalRead(HOURPIN) == LOW) {
-    ledon = !ledon;
+  // semi long press: hours up
+  // semi long press + press additional Button2: minutes up
+  if (digitalRead(BUTTON1) == LOW) {
     onsec = 0;
     ssd1306_on();
-    if (ledon == true) {
-      digitalWrite(LEDPIN, HIGH);
-    } else {
-      digitalWrite(LEDPIN, LOW);      
-    }
     
-    delay(1000);
-    tick+=4;
-    if (digitalRead(HOURPIN) == LOW) {
+    delay(500);
+    tick+=2;
+    if (digitalRead(BUTTON1) == LOW) {
       hours = (hours+1)%24;
       seconds = 0;
     }
-  }
-  
-  if (digitalRead(MINUPIN) == LOW) {
-    onsec = 0;
-    ssd1306_on();
-    delay(250);
-    tick+=1;
-    if (digitalRead(MINUPIN) == LOW) {
+    while (digitalRead(BUTTON2) == LOW) {
       minutes = (minutes+1)%60;
       seconds = 0;
+      bigDigital();
+      delay(300);
+    }
+  }
+
+  // short press: Display on
+  // long press: switch LED on/off
+  if (digitalRead(BUTTON2) == LOW) {
+    onsec = 0;
+    ssd1306_on();
+    
+    delay(900);
+    tick+=4;
+    if (digitalRead(BUTTON2) == LOW) {
+      ledon = !ledon;
+      if (ledon == true) {
+        digitalWrite(LEDPIN, HIGH);
+      } else {
+        digitalWrite(LEDPIN, LOW);      
+      }
     }
   }
 

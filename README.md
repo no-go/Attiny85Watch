@@ -27,6 +27,12 @@ attiny85 with white LED and 128x32 i2c oled display - 2 buttons for set hours an
  -  programming how-to
  -  watchcase, chassis, design
 
+# Strange timing and flashing
+
+I have to switch via `16MHz.sh` skript from 1MHz back to 16MHz, because Arduino IDE
+can not flash ATtiny85 in 1MHz mode. After programming I have to switch ATtiny85 back with
+the `1MHz.sh` script.
+
 # Thanks to ..
 
 Thanks to Neven Boyanov and the Tinusaur/SSD1306xLED project. (MIT License)
