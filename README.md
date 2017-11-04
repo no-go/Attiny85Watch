@@ -12,6 +12,7 @@ attiny85 with white LED and 128x32 i2c oled display - 2 buttons for set hours an
  -  set hours/minutes (ok)
  -  switch LED on/off (short <1sec press toggles LED)
  -  button on / automatic off (ok)
+ -  power in mV (ok)
 
 # to do
 
