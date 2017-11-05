@@ -8,20 +8,17 @@ attiny85 with white LED and 128x32 i2c oled display - 2 buttons for set hours an
 
 # done
 
- -  set to 1Mhz to save power (ok)
- -  set hours/minutes (ok)
- -  switch LED on/off (short <1sec press toggles LED)
- -  button on / automatic off (ok)
- -  power in mV (ok)
-
-# to do
-
- -  power bar
- -  test about time accurency
- -  test lipo life time
+ -  set to 1Mhz to save power
+ -  set hours/minutes (hours Button 1, minutes Button1 + 2)
+ -  switch LED on/off (long press Button 2)
+ -  button on / automatic off
+ -  power in % extrem values in mV
+ -  test about time accurency (need 148ms for 250ms - that is strange)
+ -  test lipo life time (tested for 9h)
 
 # future steps
 
+ -  power bar
  -  big and flapping numbers
  -  nice circuit / more details
  -  programming how-to

@@ -11,6 +11,11 @@
 
 #define OFFSEC   5
 
+#define REAL250msDELAY 148
+
+#define POWERMAX 3950
+#define POWERMIN 3200
+
 int hours   = 0;
 int minutes = 0;
 int seconds = 0;
@@ -18,7 +23,7 @@ int onsec   = 0;
 byte tick    = 0;
 bool ledon = false;
 
-int vcc = 3900;
+int vcc = 3700;
 
 
 void myFont(byte x, short y, byte b) {
@@ -99,7 +104,7 @@ void setup() {
 void loop() {
   ticking();
 
-  delay(168);
+  delay(REAL250msDELAY -10);
   
   // read vcc
   ADMUX = (0<<REFS0) | (12<<MUX0);
@@ -110,10 +115,17 @@ void loop() {
   vcc = 1125300L / vcc; 
 
   bigDigital();
-  
-  ssd1306_setpos(0,3);
-  ssd1306_numdec(vcc);  
-  ssd1306_string(" mV");
+
+  if (vcc > POWERMAX || vcc < POWERMIN) {
+    ssd1306_setpos(0,3);
+    ssd1306_numdec(vcc);  
+    ssd1306_string(" mV");  
+  } else {
+    vcc = 100.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
+    ssd1306_setpos(0,3);
+    ssd1306_numdec(vcc);  
+    ssd1306_string(" %   ");
+  }
   
   // semi long press: hours up
   // semi long press + press additional Button2: minutes up
@@ -121,7 +133,7 @@ void loop() {
     onsec = 0;
     ssd1306_on();
     
-    delay(500);
+    delay(REAL250msDELAY *2);
     tick+=2;
     if (digitalRead(BUTTON1) == LOW) {
       hours = (hours+1)%24;
@@ -141,7 +153,7 @@ void loop() {
     onsec = 0;
     ssd1306_on();
     
-    delay(900);
+    delay(REAL250msDELAY *4);
     tick+=4;
     if (digitalRead(BUTTON2) == LOW) {
       ledon = !ledon;
