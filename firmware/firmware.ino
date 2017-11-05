@@ -128,7 +128,7 @@ void loop() {
       ssd1306_string(" %   ");
     }
   } else {
-    delay(245);
+    delay(250);
   }
   
   // semi long press: hours up
