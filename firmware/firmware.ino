@@ -11,7 +11,7 @@
 
 #define OFFSEC   5
 
-#define REAL250msDELAY 155
+#define REAL250msDELAY 240
 
 #define POWERMAX 3950
 #define POWERMIN 3200
@@ -52,19 +52,19 @@ void myFont(byte x, short y, byte b) {
 
 inline void bigDigital() {
   int t = hours/10;
-  myFont(0, 0,t);
+  myFont(30, 0,t);
   t = hours - t*10;
-  myFont(8, 0,t);
+  myFont(38, 0,t);
   
   t = minutes/10;
-  myFont(22, 0,t);
+  myFont(52, 0,t);
   t = minutes - t*10;
-  myFont(30, 0,t);
+  myFont(60, 0,t);
 
   t = seconds/10;
-  myFont(44, 0,t);
+  myFont(74, 0,t);
   t = seconds - t*10;
-  myFont(52, 0,t);
+  myFont(82, 0,t);
 }
 
 inline void ticking() {
@@ -103,7 +103,13 @@ void setup() {
 
 void loop() {
   ticking();
-
+  
+  if (onsec > OFFSEC) {
+    ssd1306_fill(0); tick+=3;
+    ssd1306_off();
+    onsec = -1;
+  }
+  
   if (onsec != -1) {  
     delay(REAL250msDELAY -10);
   
@@ -118,19 +124,20 @@ void loop() {
     bigDigital();
   
     if (vcc > POWERMAX || vcc < POWERMIN) {
-      ssd1306_setpos(0,3);
+      ssd1306_setpos(48,3);
       ssd1306_numdec(vcc);  
       ssd1306_string(" mV");  
     } else {
       vcc = 100.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
-      ssd1306_setpos(0,3);
+      ssd1306_setpos(48,3);
       ssd1306_numdec(vcc);  
       ssd1306_string(" %   ");
     }
   } else {
-    delay(250);
+    // should be 250ms ?!?
+    delay(270);
   }
-  
+
   // semi long press: hours up
   // semi long press + press additional Button2: minutes up
   if (digitalRead(BUTTON1) == LOW) {
@@ -167,10 +174,5 @@ void loop() {
         digitalWrite(LEDPIN, LOW);      
       }
     }
-  }
-
-  if (onsec > OFFSEC) {
-    ssd1306_off();
-    onsec = -1;
   }
 }
