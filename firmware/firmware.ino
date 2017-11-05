@@ -135,7 +135,14 @@ void loop() {
     }
   } else {
     // should be 250ms ?!?
-    delay(270);
+    /**
+     * 250 10% to fast ?
+     * 270 10% to slow
+     * 261 5% to slow
+     * 257 to slow
+     * 251 to slow
+     */
+    delay(249);
   }
 
   // semi long press: hours up
