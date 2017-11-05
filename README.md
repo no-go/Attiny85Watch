@@ -12,8 +12,8 @@ attiny85 with white LED and 128x32 i2c oled display - 2 buttons for set hours an
  -  set hours/minutes (hours Button 1, minutes Button1 + 2)
  -  switch LED on/off (long press Button 2)
  -  button on / automatic off
- -  power in % extrem values in mV
- -  test about time accurency (need 148ms for 250ms - that is strange)
+ -  power in procentage, but in extrem values in mV
+ -  test about time accurency :-S
  -  test lipo life time (tested for 9h)
 
 # future steps
@@ -22,7 +22,15 @@ attiny85 with white LED and 128x32 i2c oled display - 2 buttons for set hours an
  -  big and flapping numbers
  -  nice circuit / more details
  -  programming how-to
- -  watchcase, chassis, design
+
+# Images
+
+![easy wired](img/backside.jpg)
+![tiny size](img/tiny.jpg)
+![make your own writsband](img/wristband.jpg)
+![maybe pink color was a bad choice](img/final.jpg)
+
+Chassis build with 1:3 silicone (hardware store), food coloring and maize starch (supermarket).
 
 # Strange timing and flashing
 
