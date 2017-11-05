@@ -9,17 +9,18 @@
 #define BUTTON1  4
 #define BUTTON2  3
 
-#define OFFSEC   5
+#define OFFSEC   6
 
 #define REAL250msDELAY 240
 
 #define POWERMAX 3950
 #define POWERMIN 3200
 
-int hours   = 0;
-int minutes = 0;
-int seconds = 0;
-int onsec   = 0;
+int hours   = 23;
+int minutes = 59;
+int seconds = 56;
+
+int onsec    = 0;
 byte tick    = 0;
 bool ledon = false;
 
@@ -105,12 +106,14 @@ void loop() {
   ticking();
   
   if (onsec > OFFSEC) {
-    ssd1306_fill(0); tick+=3;
     ssd1306_off();
     onsec = -1;
   }
   
-  if (onsec != -1) {  
+  if (
+    onsec != -1 ||                // do that stuff if display is on (not off)
+    (tick==1 && ( seconds==1 || seconds==31))  // or (for a faster refresh) do it every 30 sec
+  ) {  
     delay(REAL250msDELAY -10);
   
     // read vcc
@@ -136,13 +139,14 @@ void loop() {
   } else {
     // should be 250ms ?!?
     /**
-     * 250 10% to fast ?
+     * 250 a bit to fast
      * 270 10% to slow
      * 261 5% to slow
      * 257 to slow
      * 251 to slow
+     * 249 to fast
      */
-    delay(249);
+    delay(250);
   }
 
   // semi long press: hours up
