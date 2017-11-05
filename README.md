@@ -1,6 +1,10 @@
-# Attiny85Watch
+# ATtiny85 Watch
 
-attiny85 with white LED and 128x32 i2c oled display - 2 buttons for set hours and minutes
+Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 buttons for set hours and minutes as watch!
+
+[Project page](https://no-go.github.io/Attiny85Watch/)
+
+[Jochen Peters Krefeld](http://digisocken.de/blog.html)
 
 # Circuit
 
