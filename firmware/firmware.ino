@@ -11,7 +11,7 @@
 
 #define OFFSEC   5
 
-#define REAL250msDELAY 148
+#define REAL250msDELAY 155
 
 #define POWERMAX 3950
 #define POWERMIN 3200
@@ -104,27 +104,31 @@ void setup() {
 void loop() {
   ticking();
 
-  delay(REAL250msDELAY -10);
+  if (onsec != -1) {  
+    delay(REAL250msDELAY -10);
   
-  // read vcc
-  ADMUX = (0<<REFS0) | (12<<MUX0);
-  delay(10);
-  ADCSRA |= (1<<ADSC); // Convert
-  while (bit_is_set(ADCSRA,ADSC));
-  vcc = ADCW;
-  vcc = 1125300L / vcc; 
-
-  bigDigital();
-
-  if (vcc > POWERMAX || vcc < POWERMIN) {
-    ssd1306_setpos(0,3);
-    ssd1306_numdec(vcc);  
-    ssd1306_string(" mV");  
+    // read vcc
+    ADMUX = (0<<REFS0) | (12<<MUX0);
+    delay(10);
+    ADCSRA |= (1<<ADSC); // Convert
+    while (bit_is_set(ADCSRA,ADSC));
+    vcc = ADCW;
+    vcc = 1125300L / vcc; 
+  
+    bigDigital();
+  
+    if (vcc > POWERMAX || vcc < POWERMIN) {
+      ssd1306_setpos(0,3);
+      ssd1306_numdec(vcc);  
+      ssd1306_string(" mV");  
+    } else {
+      vcc = 100.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
+      ssd1306_setpos(0,3);
+      ssd1306_numdec(vcc);  
+      ssd1306_string(" %   ");
+    }
   } else {
-    vcc = 100.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
-    ssd1306_setpos(0,3);
-    ssd1306_numdec(vcc);  
-    ssd1306_string(" %   ");
+    delay(245);
   }
   
   // semi long press: hours up
@@ -133,7 +137,7 @@ void loop() {
     onsec = 0;
     ssd1306_on();
     
-    delay(REAL250msDELAY *2);
+    delay(500);
     tick+=2;
     if (digitalRead(BUTTON1) == LOW) {
       hours = (hours+1)%24;
@@ -153,7 +157,7 @@ void loop() {
     onsec = 0;
     ssd1306_on();
     
-    delay(REAL250msDELAY *4);
+    delay(1000);
     tick+=4;
     if (digitalRead(BUTTON2) == LOW) {
       ledon = !ledon;
