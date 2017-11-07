@@ -13,12 +13,12 @@
 
 #define OFFSEC   6
 
-#define POWERMAX 3850
-#define POWERMIN 3200
+#define POWERMAX 3900
+#define POWERMIN 3180
 
-int hours   = 23;
-int minutes = 59;
-int seconds = 50;
+int hours   = 0;
+int minutes = 0;
+int seconds = 2;
 
 int onsec    = 0;
 byte tick    = 0;
@@ -115,10 +115,10 @@ void loop() {
     (tick==1 && ( seconds==1 || seconds==31))  // or (for a faster refresh) do it every 30 sec
   ) {  
     
-    delay(230);  
+    delay(46);  
     // read vcc
     ADMUX = (0<<REFS0) | (12<<MUX0);
-    delay(20);
+    delay(26);
     ADCSRA |= (1<<ADSC); // Convert
     while (bit_is_set(ADCSRA,ADSC));
     vcc = ADCW;
@@ -156,7 +156,7 @@ void loop() {
   }
   // in 15h clock is +3min to fast
   // time fix
-  if (tick==0 && seconds==0) delay(200);
+  if (tick==0 && seconds==0) delay(170);
 
   // semi long press: hours up
   // semi long press + press additional Button2: minutes up
