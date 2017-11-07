@@ -5,6 +5,8 @@
 #include "num2str.h"
 #include "num2str.c"
 
+// tested: 14h with 1MHz 65mAh Lipo (in that time clock is +3min to fast)
+
 #define LEDPIN   1
 #define BUTTON1  4
 #define BUTTON2  3
@@ -13,12 +15,12 @@
 
 #define REAL250msDELAY 240
 
-#define POWERMAX 3950
+#define POWERMAX 3850
 #define POWERMIN 3200
 
 int hours   = 23;
 int minutes = 59;
-int seconds = 56;
+int seconds = 50;
 
 int onsec    = 0;
 byte tick    = 0;

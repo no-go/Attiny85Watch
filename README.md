@@ -17,8 +17,8 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
  -  switch LED on/off (long press Button 2)
  -  button on / automatic off
  -  power in procentage, but in extrem values in mV
- -  test about time accurency :-S
- -  test lipo life time (tested for 9h)
+ -  test about time accurency (in 14h +3min)
+ -  test lipo life time (tested for 14h)
 
 # future steps
 
