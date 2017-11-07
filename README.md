@@ -19,10 +19,10 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
  -  power in procentage, but in extrem values in mV
  -  test about time accurency (in 14h +3min)
  -  test lipo life time (tested for 14h)
+ -  ASCII power bar
 
 # future steps
 
- -  power bar
  -  big and flapping numbers
  -  nice circuit / more details
  -  programming how-to

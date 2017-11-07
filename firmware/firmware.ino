@@ -5,15 +5,13 @@
 #include "num2str.h"
 #include "num2str.c"
 
-// tested: 14h with 1MHz 65mAh Lipo (in that time clock is +3min to fast)
+// tested: 14h with 1MHz 65mAh Lipo
 
 #define LEDPIN   1
 #define BUTTON1  4
 #define BUTTON2  3
 
 #define OFFSEC   6
-
-#define REAL250msDELAY 240
 
 #define POWERMAX 3850
 #define POWERMIN 3200
@@ -55,19 +53,19 @@ void myFont(byte x, short y, byte b) {
 
 inline void bigDigital() {
   int t = hours/10;
-  myFont(30, 0,t);
+  myFont(34, 0,t);
   t = hours - t*10;
-  myFont(38, 0,t);
+  myFont(42, 0,t);
   
   t = minutes/10;
-  myFont(52, 0,t);
+  myFont(56, 0,t);
   t = minutes - t*10;
-  myFont(60, 0,t);
+  myFont(64, 0,t);
 
   t = seconds/10;
-  myFont(74, 0,t);
+  myFont(78, 0,t);
   t = seconds - t*10;
-  myFont(82, 0,t);
+  myFont(86, 0,t);
 }
 
 inline void ticking() {
@@ -116,11 +114,11 @@ void loop() {
     onsec != -1 ||                // do that stuff if display is on (not off)
     (tick==1 && ( seconds==1 || seconds==31))  // or (for a faster refresh) do it every 30 sec
   ) {  
-    delay(REAL250msDELAY -10);
-  
+    
+    delay(230);  
     // read vcc
     ADMUX = (0<<REFS0) | (12<<MUX0);
-    delay(10);
+    delay(20);
     ADCSRA |= (1<<ADSC); // Convert
     while (bit_is_set(ADCSRA,ADSC));
     vcc = ADCW;
@@ -129,27 +127,36 @@ void loop() {
     bigDigital();
   
     if (vcc > POWERMAX || vcc < POWERMIN) {
-      ssd1306_setpos(48,3);
-      ssd1306_numdec(vcc);  
-      ssd1306_string(" mV");  
+      ssd1306_setpos(36,3);
+      ssd1306_string(" ");  
+      ssd1306_numdec(vcc);
+      ssd1306_string(" mV ");  
     } else {
+      vcc = 119.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
+      ssd1306_setpos(0, 3);
+      ssd1306_char('[');
+      for(int i=4; i < 120; i+=4) {
+        ssd1306_setpos(i, 3);
+        if (i < vcc) {
+          ssd1306_char('I');
+        } else {
+          if ((i-4) > vcc) ssd1306_char(' ');
+        }
+      }
+      
+      /*
       vcc = 100.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
       ssd1306_setpos(48,3);
-      ssd1306_numdec(vcc);  
+      ssd1306_numdec(vcc);
       ssd1306_string(" %   ");
+      */
     }
   } else {
-    // should be 250ms ?!?
-    /**
-     * 250 a bit to fast
-     * 270 10% to slow
-     * 261 5% to slow
-     * 257 to slow
-     * 251 to slow
-     * 249 to fast
-     */
     delay(250);
   }
+  // in 15h clock is +3min to fast
+  // time fix
+  if (tick==0 && seconds==0) delay(200);
 
   // semi long press: hours up
   // semi long press + press additional Button2: minutes up
