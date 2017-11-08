@@ -154,9 +154,14 @@ void loop() {
   } else {
     delay(250);
   }
-  // in 15h clock is +3min to fast
+  // in 15h clock is +3min to fast => add 1sec every 5min
   // time fix
-  if (tick==0 && seconds==0) delay(170);
+  if (tick==0 && seconds==0 && minutes%5==0) {
+    digitalWrite(LEDPIN, HIGH);
+    delay(500);
+    digitalWrite(LEDPIN, LOW);
+    delay(500);
+  }
 
   // semi long press: hours up
   // semi long press + press additional Button2: minutes up
