@@ -156,11 +156,11 @@ void loop() {
   }
   // in 15h clock is +3min to fast => add 1sec every 5min
   // time fix
-  if (tick==0 && seconds==0 && minutes%5==0) {
+  if (tick==0 && seconds==0 && minutes%10==0) {
     digitalWrite(LEDPIN, HIGH);
-    delay(500);
+    delay(20);
     digitalWrite(LEDPIN, LOW);
-    delay(500);
+    delay(480);
   }
 
   // semi long press: hours up
