@@ -157,9 +157,10 @@ void loop() {
   // in 15h clock is +3min to fast => add 1sec every 5min
   // time fix
   if (tick==0 && seconds==0 && minutes%10==0) {
-    digitalWrite(LEDPIN, HIGH);
+    // lost to much power
+    //digitalWrite(LEDPIN, HIGH);
     delay(20);
-    digitalWrite(LEDPIN, LOW);
+    //digitalWrite(LEDPIN, LOW);
     delay(480);
   }
 
