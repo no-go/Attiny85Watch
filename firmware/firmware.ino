@@ -26,10 +26,14 @@ bool ledon = false;
 
 int vcc = 3700;
 
+const byte smallBitmap[] PROGMEM = {
+0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xF0,0x03,0x80,0x1F,0x00,0xFC,0x00,0xF0,0x0F,0x80,0x7F,0x00,0xFC,0x03,0xF0,0x3F,0x80,0xE7,0x01,0x3C,0x0F,0xE0,0x79,0x80,0xCF,0x07,0x3C,0x3C,0xE0,0xE1,0x01,0xFF,0x0F,0xFC,0xFF,0xE0,0xFF,0x07,0xFF,0x3F,0x7C,0xE0,0xE3,0x03,0x1F,0x0F,0xF0,0x78,0x80,0xE7,0x03,0x7C,0x1F,0xE0,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+};
 
 void myFont(byte x, short y, byte b) {
   if (b == 0) {
-    ssd1306_string_font8x16xy(x, y, "0");
+    ssd1306_draw_bmp(x, y, 19, 32, smallBitmap);
+    //ssd1306_string_font8x16xy(x, y, "0");
   } else if (b == 1) {
     ssd1306_string_font8x16xy(x, y, "1");
   } else if (b == 2) {
@@ -131,25 +135,6 @@ void loop() {
       ssd1306_string(" ");  
       ssd1306_numdec(vcc);
       ssd1306_string(" mV ");  
-    } else {
-      vcc = 119.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
-      ssd1306_setpos(0, 3);
-      ssd1306_char('[');
-      for(int i=4; i < 120; i+=4) {
-        ssd1306_setpos(i, 3);
-        if (i < vcc) {
-          ssd1306_char('I');
-        } else {
-          if ((i-4) > vcc) ssd1306_char(' ');
-        }
-      }
-      
-      /*
-      vcc = 100.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
-      ssd1306_setpos(48,3);
-      ssd1306_numdec(vcc);
-      ssd1306_string(" %   ");
-      */
     }
   } else {
     delay(250);
@@ -157,11 +142,7 @@ void loop() {
   // in 15h clock is +3min to fast => add 1sec every 5min
   // time fix
   if (tick==0 && seconds==0 && minutes%10==0) {
-    // lost to much power
-    //digitalWrite(LEDPIN, HIGH);
-    delay(20);
-    //digitalWrite(LEDPIN, LOW);
-    delay(480);
+    delay(500);
   }
 
   // semi long press: hours up
