@@ -27,10 +27,11 @@ int vcc = 3700;
 
 const byte barA1[] PROGMEM = {
   0b11111100,
-  0b11110110,
+  0b00000110,
   0b11110111,
   0b11110111,
-  0b11110110,
+  0b11110111,
+  0b00000110,
   0b11111100
 };
 
@@ -39,25 +40,28 @@ const byte barA0[] PROGMEM = {
   0b00000110,
   0b00000111,
   0b00000111,
+  0b00000111,
   0b00000110,
   0b11111100
 };
 
 const byte barB2[] PROGMEM = {
   0b11111111,
-  0b11111111,
-  0b11111111,
-  0b11111111,
-  0b11111111,
+  0b10000000,
+  0b10111111,
+  0b10111111,
+  0b10111111,
+  0b10000000,
   0b11111111
 };
 
 const byte barB1[] PROGMEM = {
   0b11111111,
-  0b11110000,
-  0b11110000,
-  0b11110000,
-  0b11110000,
+  0b10000000,
+  0b10111000,
+  0b10111000,
+  0b10111000,
+  0b10000000,
   0b11111111
 };
 
@@ -67,11 +71,13 @@ const byte barB0[] PROGMEM = {
   0b00000000,
   0b00000000,
   0b00000000,
+  0b00000000,
   0b11111111
 };
 
 const byte barC0[] PROGMEM = {
   0b11111111,
+  0b10000000,
   0b10000000,
   0b10000000,
   0b10000000,
@@ -155,6 +161,7 @@ void setup() {
   ssd1306_setpos(0,0);
 }
 
+
 void loop() {
   ticking();
   
@@ -167,11 +174,10 @@ void loop() {
     onsec != -1 ||                // do that stuff if display is on (not off)
     (tick==1 && ( seconds==1 || seconds==31))  // or (for a faster refresh) do it every 30 sec
   ) {  
-    
-    delay(46);  
+      
     // read vcc
     ADMUX = (0<<REFS0) | (12<<MUX0);
-    delay(26);
+    delay(20);
     ADCSRA |= (1<<ADSC); // Convert
     while (bit_is_set(ADCSRA,ADSC));
     vcc = ADCW;
@@ -186,54 +192,49 @@ void loop() {
     } else {
       vcc = 8.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
       if (vcc > 7) {
-        ssd1306_draw_bmp(121, 0,  127, 1, barA1);
-        ssd1306_draw_bmp(121, 1,  127, 2, barB2);
-        ssd1306_draw_bmp(121, 2,  127, 3, barB2);
-        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+        ssd1306_draw_bmp(120, 0,  127, 1, barA1);
+        ssd1306_draw_bmp(120, 1,  127, 2, barB2);
+        ssd1306_draw_bmp(120, 2,  127, 3, barB2);
+        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
       } else if (vcc > 6) {
-        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(121, 1,  127, 2, barB2);
-        ssd1306_draw_bmp(121, 2,  127, 3, barB2);
-        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(120, 1,  127, 2, barB2);
+        ssd1306_draw_bmp(120, 2,  127, 3, barB2);
+        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
       } else if (vcc > 5) {
-        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(121, 1,  127, 2, barB1);
-        ssd1306_draw_bmp(121, 2,  127, 3, barB2);
-        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(120, 1,  127, 2, barB1);
+        ssd1306_draw_bmp(120, 2,  127, 3, barB2);
+        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
       } else if (vcc > 4) {
-        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(121, 2,  127, 3, barB2);
-        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(120, 2,  127, 3, barB2);
+        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
       } else if (vcc > 3) {
-        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(121, 2,  127, 3, barB1);
-        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(120, 2,  127, 3, barB1);
+        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
       } else if (vcc > 2) {
-        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(121, 2,  127, 3, barB0);
-        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(120, 2,  127, 3, barB0);
+        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
       } else if (vcc > 1) {
-        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(121, 2,  127, 3, barB0);
-        ssd1306_draw_bmp(121, 3,  127, 4, barB1);
+        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(120, 2,  127, 3, barB0);
+        ssd1306_draw_bmp(120, 3,  127, 4, barB1);
       } else {
-        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(121, 2,  127, 3, barB0);
-        ssd1306_draw_bmp(121, 3,  127, 4, barC0);
+        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(120, 2,  127, 3, barB0);
+        ssd1306_draw_bmp(120, 3,  127, 4, barC0);
       }
     }
   } else {
-    delay(250);
-  }
-  // in 15h clock is +3min to fast => add 1sec every 5min
-  // time fix
-  if (tick==0 && seconds==0 && minutes%10==0) {
-    delay(500);
+    delay(232); // should be 250 ms, but it is not 
   }
 
   // semi long press: hours up
