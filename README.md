@@ -17,22 +17,18 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
  -  switch LED on/off (long press Button 2)
  -  button on / automatic off
  -  power in procentage, but in extrem values in mV
- -  test about time accurency (in 14h +3min)
- -  test lipo life time (tested for 14h)
+ -  test about time accurency (?)
+ -  test lipo life time (?)
  -  ASCII power bar
 
 # future steps
 
- -  big and flapping numbers
  -  nice circuit / more details
  -  programming how-to
 
 # Images
 
-![easy wired](img/backside.jpg)
-![tiny size](img/tiny.jpg)
-![make your own writsband](img/wristband.jpg)
-![maybe pink color was a bad choice](img/final.jpg)
+todo
 
 Chassis build with 1:3 silicone (hardware store), food coloring and maize starch (supermarket).
 

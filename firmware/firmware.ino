@@ -1,11 +1,10 @@
 #include "ssd1306xled.h"
 #include "ssd1306xled.c"
-#include "ssd1306xled8x16.h"
-#include "ssd1306xled8x16.c"
 #include "num2str.h"
 #include "num2str.c"
+#include "numbers.h"
 
-// tested: 14h with 1MHz 65mAh Lipo
+// old : tested: 14h with 1MHz 65mAh Lipo
 
 #define LEDPIN   1
 #define BUTTON1  4
@@ -26,50 +25,100 @@ bool ledon = false;
 
 int vcc = 3700;
 
-const byte smallBitmap[] PROGMEM = {
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xF0,0x03,0x80,0x1F,0x00,0xFC,0x00,0xF0,0x0F,0x80,0x7F,0x00,0xFC,0x03,0xF0,0x3F,0x80,0xE7,0x01,0x3C,0x0F,0xE0,0x79,0x80,0xCF,0x07,0x3C,0x3C,0xE0,0xE1,0x01,0xFF,0x0F,0xFC,0xFF,0xE0,0xFF,0x07,0xFF,0x3F,0x7C,0xE0,0xE3,0x03,0x1F,0x0F,0xF0,0x78,0x80,0xE7,0x03,0x7C,0x1F,0xE0,0x03,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+const byte barA1[] PROGMEM = {
+  0b11111100,
+  0b11110110,
+  0b11110111,
+  0b11110111,
+  0b11110110,
+  0b11111100
 };
 
-void myFont(byte x, short y, byte b) {
+const byte barA0[] PROGMEM = {
+  0b11111100,
+  0b00000110,
+  0b00000111,
+  0b00000111,
+  0b00000110,
+  0b11111100
+};
+
+const byte barB2[] PROGMEM = {
+  0b11111111,
+  0b11111111,
+  0b11111111,
+  0b11111111,
+  0b11111111,
+  0b11111111
+};
+
+const byte barB1[] PROGMEM = {
+  0b11111111,
+  0b11110000,
+  0b11110000,
+  0b11110000,
+  0b11110000,
+  0b11111111
+};
+
+const byte barB0[] PROGMEM = {
+  0b11111111,
+  0b00000000,
+  0b00000000,
+  0b00000000,
+  0b00000000,
+  0b11111111
+};
+
+const byte barC0[] PROGMEM = {
+  0b11111111,
+  0b10000000,
+  0b10000000,
+  0b10000000,
+  0b10000000,
+  0b11111111
+};
+
+void myFont(byte x, byte b) {
+  int y=0;
   if (b == 0) {
-    ssd1306_draw_bmp(x, y, 19, 32, smallBitmap);
-    //ssd1306_string_font8x16xy(x, y, "0");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num0);
   } else if (b == 1) {
-    ssd1306_string_font8x16xy(x, y, "1");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num1);
   } else if (b == 2) {
-    ssd1306_string_font8x16xy(x, y, "2");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num2);
   } else if (b == 3) {
-    ssd1306_string_font8x16xy(x, y, "3");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num3);
   } else if (b == 4) {
-    ssd1306_string_font8x16xy(x, y, "4");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num4);
   } else if (b == 5) {
-    ssd1306_string_font8x16xy(x, y, "5");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num5);
   } else if (b == 6) {
-    ssd1306_string_font8x16xy(x, y, "6");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num6);
   } else if (b == 7) {
-    ssd1306_string_font8x16xy(x, y, "7");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num7);
   } else if (b == 8) {
-    ssd1306_string_font8x16xy(x, y, "8");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num8);
   } else if (b == 9) {
-    ssd1306_string_font8x16xy(x, y, "9");
+    ssd1306_draw_bmp(x, 0, x+16, 8, num9);
   }
 }
 
 inline void bigDigital() {
   int t = hours/10;
-  myFont(34, 0,t);
+  myFont(0, t);
   t = hours - t*10;
-  myFont(42, 0,t);
+  myFont(17, t);
   
   t = minutes/10;
-  myFont(56, 0,t);
+  myFont(40, t);
   t = minutes - t*10;
-  myFont(64, 0,t);
+  myFont(57, t);
 
   t = seconds/10;
-  myFont(78, 0,t);
+  myFont(80, t);
   t = seconds - t*10;
-  myFont(86, 0,t);
+  myFont(97, t);
 }
 
 inline void ticking() {
@@ -131,10 +180,52 @@ void loop() {
     bigDigital();
   
     if (vcc > POWERMAX || vcc < POWERMIN) {
-      ssd1306_setpos(36,3);
-      ssd1306_string(" ");  
+      ssd1306_setpos(36,3);  
       ssd1306_numdec(vcc);
-      ssd1306_string(" mV ");  
+      ssd1306_string(" mV");  
+    } else {
+      vcc = 8.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
+      if (vcc > 7) {
+        ssd1306_draw_bmp(121, 0,  127, 1, barA1);
+        ssd1306_draw_bmp(121, 1,  127, 2, barB2);
+        ssd1306_draw_bmp(121, 2,  127, 3, barB2);
+        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+      } else if (vcc > 6) {
+        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(121, 1,  127, 2, barB2);
+        ssd1306_draw_bmp(121, 2,  127, 3, barB2);
+        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+      } else if (vcc > 5) {
+        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(121, 1,  127, 2, barB1);
+        ssd1306_draw_bmp(121, 2,  127, 3, barB2);
+        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+      } else if (vcc > 4) {
+        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(121, 2,  127, 3, barB2);
+        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+      } else if (vcc > 3) {
+        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(121, 2,  127, 3, barB1);
+        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+      } else if (vcc > 2) {
+        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(121, 2,  127, 3, barB0);
+        ssd1306_draw_bmp(121, 3,  127, 4, barB2);
+      } else if (vcc > 1) {
+        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(121, 2,  127, 3, barB0);
+        ssd1306_draw_bmp(121, 3,  127, 4, barB1);
+      } else {
+        ssd1306_draw_bmp(121, 0,  127, 1, barA0);
+        ssd1306_draw_bmp(121, 1,  127, 2, barB0);
+        ssd1306_draw_bmp(121, 2,  127, 3, barB0);
+        ssd1306_draw_bmp(121, 3,  127, 4, barC0);
+      }
     }
   } else {
     delay(250);
