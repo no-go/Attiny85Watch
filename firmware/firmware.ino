@@ -2,7 +2,10 @@
 #include "ssd1306xled.c"
 #include "num2str.h"
 #include "num2str.c"
-#include "numbers.h"
+
+//#include "numbers.h"
+#include "DotNumbers.h"
+using namespace DotNumbers;
 
 // old : tested: 14h with 1MHz 65mAh Lipo
 
@@ -10,18 +13,18 @@
 #define BUTTON1  4
 #define BUTTON2  3
 
-#define OFFSEC   6
+#define OFFSEC     6
+#define DELAY_QUAD 250  //should be 230 ms, but it is not (+20ms power messure delay) = 250
+#define POWERMAX   3900
+#define POWERMIN   3180
 
-#define POWERMAX 3900
-#define POWERMIN 3180
-
-int hours   = 0;
-int minutes = 0;
-int seconds = 2;
+int hours   = 20;
+int minutes = 28;
+int seconds = 30;
 
 int onsec    = 0;
 byte tick    = 0;
-bool ledon = false;
+byte ledon   = 0;
 
 int vcc = 3700;
 
@@ -233,8 +236,17 @@ void loop() {
         ssd1306_draw_bmp(120, 3,  127, 4, barC0);
       }
     }
+    if (ledon == 2) digitalWrite(LEDPIN, tick%2==0);
+
   } else {
-    delay(235); // should be 250 ms, but it is not 
+    if (ledon == 2) {
+      digitalWrite(LEDPIN, HIGH);
+      delay(50);
+      digitalWrite(LEDPIN, LOW);
+      delay(DELAY_QUAD-50);
+    } else {
+      delay(DELAY_QUAD);
+    }
   }
 
   // semi long press: hours up
@@ -266,12 +278,13 @@ void loop() {
     delay(1000);
     tick+=4;
     if (digitalRead(BUTTON2) == LOW) {
-      ledon = !ledon;
-      if (ledon == true) {
-        digitalWrite(LEDPIN, HIGH);
-      } else {
-        digitalWrite(LEDPIN, LOW);      
-      }
+      ledon = (ledon+1)%3;
     }
+    if (ledon == 1) {
+      digitalWrite(LEDPIN, HIGH);
+    } else if (ledon == 0) {
+      digitalWrite(LEDPIN, LOW);      
+    } 
   }
+
 }
