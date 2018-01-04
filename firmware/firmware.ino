@@ -234,7 +234,7 @@ void loop() {
       }
     }
   } else {
-    delay(232); // should be 250 ms, but it is not 
+    delay(235); // should be 250 ms, but it is not 
   }
 
   // semi long press: hours up
