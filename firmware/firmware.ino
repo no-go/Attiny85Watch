@@ -2,10 +2,14 @@
 #include "ssd1306xled.c"
 #include "num2str.h"
 #include "num2str.c"
+#include <avr/sleep.h>
+#include <avr/power.h>
+#include <avr/wdt.h>
 
 //#include "numbers.h"
-#include "DotNumbers.h"
-using namespace DotNumbers;
+//#include "DotNumbers.h"
+#include "FuturNumbers.h"
+using namespace FuturNumbers;
 
 // old : tested: 14h with 1MHz 65mAh Lipo
 
@@ -18,9 +22,9 @@ using namespace DotNumbers;
 #define POWERMAX   3900
 #define POWERMIN   3180
 
-int hours   = 20;
-int minutes = 28;
-int seconds = 30;
+int hours   = 22;
+int minutes = 29;
+int seconds = 00;
 
 int onsec    = 0;
 byte tick    = 0;
@@ -157,6 +161,10 @@ void setup() {
   pinMode(BUTTON1, INPUT_PULLUP);
   pinMode(BUTTON2, INPUT_PULLUP);
   pinMode(LEDPIN,  OUTPUT);
+  wdt_disable();
+  sleep_bod_disable();
+  power_adc_disable();
+  power_timer1_disable();
   
   ssd1306_init();
   ssd1306_fill(0);
@@ -179,12 +187,14 @@ void loop() {
   ) {  
       
     // read vcc
+    power_adc_enable();
     ADMUX = (0<<REFS0) | (12<<MUX0);
     delay(20);
     ADCSRA |= (1<<ADSC); // Convert
     while (bit_is_set(ADCSRA,ADSC));
     vcc = ADCW;
-    vcc = 1125300L / vcc; 
+    vcc = 1125300L / vcc;
+    power_adc_disable(); 
   
     bigDigital();
   

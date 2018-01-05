@@ -10,25 +10,30 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
 
 ![Circuit](img/circuit.jpg)
 
-# done
+# Features
 
  -  set to 1Mhz to save power
  -  set hours/minutes (hours Button 1, minutes Button1 + 2)
- -  switch LED on/off (long press Button 2)
+ -  switch LED on/flashing/off (long press Button 2)
  -  button on / automatic off
- -  power in procentage, but in extrem values in mV
- -  ASCII power bar
-
+ -  power in extrem values: mV
+ -  Graphical power bar
+ -  time accurency 7h +45sec to fast (please make your own check)
+ -  3 different fonts
+ -  test lipo life time (more than 8h)
+ 
 # future steps
 
  -  nice circuit / more details
  -  programming how-to
- -  test about time accurency (?)
- -  test lipo life time (?)
 
 # Images
 
-![image](img/final.jpg)
+![normal font](img/final.jpg)
+
+![futur font](img/futur.jpg)
+
+![dots font](img/dots.jpg)
 
 Chassis build with 1:3 silicone (hardware store), food coloring and maize starch (supermarket).
 
