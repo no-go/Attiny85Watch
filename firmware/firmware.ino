@@ -8,8 +8,9 @@
 
 //#include "numbers.h"
 //#include "DotNumbers.h"
-#include "FuturNumbers.h"
-using namespace FuturNumbers;
+//#include "FuturNumbers.h"
+#include "Bold.h"
+using namespace Bold;
 
 // old : tested: 14h with 1MHz 65mAh Lipo
 
@@ -22,9 +23,9 @@ using namespace FuturNumbers;
 #define POWERMAX   3900
 #define POWERMIN   3180
 
-int hours   = 22;
-int minutes = 29;
-int seconds = 00;
+int hours   = 23;
+int minutes = 59;
+int seconds = 0;
 
 int onsec    = 0;
 byte tick    = 0;

@@ -19,7 +19,7 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
  -  power in extrem values: mV
  -  Graphical power bar
  -  time accurency 7h +45sec to fast (please make your own check)
- -  3 different fonts
+ -  4 different fonts
  -  test lipo life time (more than 8h)
  
 # future steps
@@ -35,6 +35,7 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
 ![normal font](img/final.jpg)
 ![futur font](img/futur.jpg)
 ![dots font](img/dots.jpg)
+![bold dot font](img/bold.jpg)
 
 Chassis build with 1:3 silicone (hardware store), food coloring and maize starch (supermarket).
 
