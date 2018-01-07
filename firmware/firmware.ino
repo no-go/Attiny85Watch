@@ -182,11 +182,16 @@ void loop() {
     onsec = -1;
   }
   
+  if (onsec == -1 && tick==1 && seconds==1) {
+    // display refresh every 1 Minute if display is off
+    ssd1306_fill(0);
+  }
+  
   if (
     onsec != -1 ||                // do that stuff if display is on (not off)
     (tick==1 && ( seconds==1 || seconds==31))  // or (for a faster refresh) do it every 30 sec
-  ) {  
-      
+  ) {
+    
     // read vcc
     power_adc_enable();
     ADMUX = (0<<REFS0) | (12<<MUX0);
@@ -196,7 +201,7 @@ void loop() {
     vcc = ADCW;
     vcc = 1125300L / vcc;
     power_adc_disable(); 
-  
+    
     bigDigital();
   
     if (vcc > POWERMAX || vcc < POWERMIN) {

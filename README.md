@@ -20,7 +20,7 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
  -  Graphical power bar
  -  time accurency 7h +45sec to fast (please make your own check)
  -  4 different fonts
- -  test lipo life time (more than 8h)
+ -  test lipo life time (more than 14h)
  
 # future steps
 
