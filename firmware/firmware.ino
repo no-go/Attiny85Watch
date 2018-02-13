@@ -9,7 +9,7 @@
 #include "Bold.h"
 using namespace Bold;
 
-// try 8Mhz
+// try 8Mhz -> 4h :-(
 
 #define LEDPIN   1
 #define BUTTON1  3
