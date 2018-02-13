@@ -9,14 +9,16 @@
 #include "Bold.h"
 using namespace Bold;
 
-// try 8Mhz -> 4h :-(
+// with 8Mhz -> 4h  :-(  4.1 V till 3.5 V
+// with 1Mhz -> ??h      4.1 V till ?.? V
 
 #define LEDPIN   1
 #define BUTTON1  3
 #define BUTTON2  4
 
-#define OFFSEC     4
-#define DELAY_TENTH 100 // should be 100ms
+#define         OFFSEC      5
+#define         DELAY_TENTH 100 // should be 100ms
+int tickDelay = DELAY_TENTH;
 
 int hours   = 0;
 int minutes = 0;
@@ -26,9 +28,13 @@ int onsec    = 0;
 byte tick    = 0;
 byte ledon   = 0;
 
-byte menu = 0;
+// old to detect refresh
+int ohours   = 23;
+int ominutes = 58;
+int oseconds = 50;
+byte otick   = 3;
 
-int vcc = 3730;
+byte menu = 0;
 
 void myFont(byte x, byte b) {
   int y=0;
@@ -62,7 +68,7 @@ inline void readVcc() {
   ssd1306_fill(0); // is a delay
   ADCSRA |= (1<<ADSC); // Convert
   while (bit_is_set(ADCSRA,ADSC));
-  vcc = ADCW;
+  int vcc = ADCW;
   vcc = 1125300L / vcc;
   power_adc_disable();
 
@@ -71,22 +77,35 @@ inline void readVcc() {
 }
 
 inline void bigDigital() {
-  int t = hours/10;
-  myFont(0, t);
-  t = hours - t*10;
-  myFont(16, t);
+  int t;
+  if (hours != ohours) {
+    ohours=hours;
+    t = hours/10;
+    myFont(0, t);
+    t = hours - t*10;
+    myFont(16, t);
+  }
+    
+  if (minutes != ominutes) {
+    ominutes=minutes;
+    t = minutes/10;
+    myFont(36, t);
+    t = minutes - t*10;
+    myFont(52, t);
+  }
   
-  t = minutes/10;
-  myFont(36, t);
-  t = minutes - t*10;
-  myFont(52, t);
-
-  t = seconds/10;
-  myFont(77, t);
-  t = seconds - t*10;
-  myFont(93, t);
-  
-  myFont(111, tick);
+  if (seconds != oseconds) {
+    oseconds=seconds;
+    t = seconds/10;
+    myFont(77, t);
+    t = seconds - t*10;
+    myFont(93, t);
+  }
+    
+  if (tick != otick) {
+    otick=tick;
+    myFont(111, tick);
+  }
 }
 
 inline void ticking() {
@@ -128,20 +147,22 @@ void setup() {
 
 
 void loop() {
-  delay(DELAY_TENTH);
+  delay(tickDelay);
   ticking();
 
   // --------------------------------------------------
   if (menu==0) {
     
-    if (onsec > OFFSEC) {
+    if (onsec >= OFFSEC) {
       digitalWrite(LEDPIN, LOW);
       ssd1306_off();
+      tickDelay = DELAY_TENTH;
       onsec = -1;
     } else {
       if (onsec >= 0) {
         digitalWrite(LEDPIN, LOW);
         bigDigital();
+        tickDelay = DELAY_TENTH -70;
       }
     }
     
@@ -158,40 +179,57 @@ void loop() {
     
   // --------------------------------------------------
   } else if (menu==2) {
-    ssd1306_on();
-    readVcc();
-    ssd1306_string_font6x8(" mV");
-    ssd1306_setpos(0,2);
-    ssd1306_string_font6x8("set hour:  ");
     digitalWrite(LEDPIN, LOW);
     if (digitalRead(BUTTON1) == LOW) {
       hours = (hours+1)%24;
       tick=0;
       seconds=0;
+      ssd1306_setpos(70,2);
+      ssd1306_numdec(hours);
+      ssd1306_string_font6x8("  ");
     }
-    //ssd1306_setpos(0,2);
-    ssd1306_numdec(hours);
     
   // --------------------------------------------------
   } else if (menu==3) {
-    ssd1306_on();
-    readVcc();
-    ssd1306_string_font6x8(" mV");
-    ssd1306_setpos(0,2);
-    ssd1306_string_font6x8("set minute:  ");
     digitalWrite(LEDPIN, LOW);
     if (digitalRead(BUTTON1) == LOW) {
       minutes = (minutes+1)%60;
       tick=0;
       seconds=0;
-    }
-    //ssd1306_setpos(0,3);
-    ssd1306_numdec(minutes);
+      ssd1306_setpos(70,2);
+      ssd1306_numdec(minutes);
+      ssd1306_string_font6x8("  ");
+    }    
   }
-
 
   if (digitalRead(BUTTON2) == LOW) {
     ssd1306_fill(0);
     menu = (menu+1)%4;
+    if (menu==0) {
+      // force refresh
+      ohours=-1;
+      ominutes=-1;
+      oseconds=-1;
+    } else if(menu > 1) {
+      ssd1306_on();
+      if (menu==2) {
+        readVcc();
+        ssd1306_string_font6x8(" mV");
+        ssd1306_setpos(0,2);
+        ssd1306_string_font6x8("set hour:");
+        ssd1306_setpos(70,2);
+        ssd1306_numdec(hours);
+        ssd1306_string_font6x8("  ");
+        
+      } else if (menu==3) {
+        readVcc();
+        ssd1306_string_font6x8(" mV");
+        ssd1306_setpos(0,2);
+        ssd1306_string_font6x8("set minute:");
+        ssd1306_setpos(70,2);
+        ssd1306_numdec(minutes);
+        ssd1306_string_font6x8("  ");
+      }
+    }
   }
 }

@@ -8,13 +8,13 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
 
 This Branch:
 
- -  runs on 8MHz instead of 1MHz (8Mhz needs more power)
- -  lifetime: 4h (65mAh Lipo after charging it)
+ -  optimized for 1MHz (8Mhz needs to power)
+ -  lifetime: 4h on 8MHz (65mAh Lipo after charging it)
  -  displays the Lipo power in mV (menu mode)
  -  Button 1: Display on (clock mode) or set hour/minutes
  -  Button 2: switch through clock, led on, menu mode (set hours), menu mode (set minutes)
 
 # todo
 
- -  switch back to 1MHz (with some tricks) for 14h lifetime
  -  test time accurency
+ -  test 1MHz lipo lifetime (until empty)
