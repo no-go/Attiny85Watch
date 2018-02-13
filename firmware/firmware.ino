@@ -6,11 +6,8 @@
 #include <avr/power.h>
 #include <avr/wdt.h>
 
-//#include "numbers.h"
-//#include "DotNumbers.h"
-//#include "FuturNumbers.h"
-#include "Bold.h"
-using namespace Bold;
+#include "FuturNumbers.h"
+using namespace FuturNumbers;
 
 // old : tested: 14h with 1MHz 65mAh Lipo
 
@@ -18,80 +15,36 @@ using namespace Bold;
 #define BUTTON1  4
 #define BUTTON2  3
 
-#define OFFSEC     6
+#define OFFSEC     5
 #define DELAY_QUAD 250  //should be 230 ms, but it is not (+20ms power messure delay) = 250
-#define POWERMAX   3900
-#define POWERMIN   3180
+#define POWERMAX   4130
+#define POWERMIN   3620
 
-int hours   = 23;
-int minutes = 59;
+int hours   = 0;
+int minutes = 0;
 int seconds = 0;
 
 int onsec    = 0;
 byte tick    = 0;
 byte ledon   = 0;
 
-int vcc = 3700;
+int vcc = 3730;
 
 const byte barA1[] PROGMEM = {
-  0b11111100,
-  0b00000110,
-  0b11110111,
-  0b11110111,
-  0b11110111,
-  0b00000110,
-  0b11111100
+  0b11111110,
+  0b11111110
 };
 
-const byte barA0[] PROGMEM = {
-  0b11111100,
-  0b00000110,
-  0b00000111,
-  0b00000111,
-  0b00000111,
-  0b00000110,
-  0b11111100
+const byte barA2[] PROGMEM = {
+  0b11110000,
+  0b11110000
 };
 
-const byte barB2[] PROGMEM = {
-  0b11111111,
-  0b10000000,
-  0b10111111,
-  0b10111111,
-  0b10111111,
-  0b10000000,
-  0b11111111
+const byte barA3[] PROGMEM = {
+  0b00000000,
+  0b00000000
 };
 
-const byte barB1[] PROGMEM = {
-  0b11111111,
-  0b10000000,
-  0b10111000,
-  0b10111000,
-  0b10111000,
-  0b10000000,
-  0b11111111
-};
-
-const byte barB0[] PROGMEM = {
-  0b11111111,
-  0b00000000,
-  0b00000000,
-  0b00000000,
-  0b00000000,
-  0b00000000,
-  0b11111111
-};
-
-const byte barC0[] PROGMEM = {
-  0b11111111,
-  0b10000000,
-  0b10000000,
-  0b10000000,
-  0b10000000,
-  0b10000000,
-  0b11111111
-};
 
 void myFont(byte x, byte b) {
   int y=0;
@@ -118,21 +71,94 @@ void myFont(byte x, byte b) {
   }
 }
 
+void scroll() {
+  ssd1306_init();
+  ssd1306_send_command(0x27); //SSD1306_LEFT_HORIZONTAL_SCROLL
+  ssd1306_send_command(0X00);
+  ssd1306_send_command(0x00); // start row
+  ssd1306_send_command(0X00);
+  ssd1306_send_command(3); // stop row
+  ssd1306_send_command(0X00);
+  ssd1306_send_command(0XFF);
+  ssd1306_send_command(0x2F); //SSD1306_ACTIVATE_SCROLL  
+}
+
 inline void bigDigital() {
+  // read vcc
+  power_adc_enable();
+  ADMUX = (0<<REFS0) | (12<<MUX0);
+  ssd1306_fill(0); // is a delay
+  ADCSRA |= (1<<ADSC); // Convert
+  while (bit_is_set(ADCSRA,ADSC));
+  vcc = ADCW;
+  vcc = 1125300L / vcc;
+  power_adc_disable();
+
+    
   int t = hours/10;
-  myFont(0, t);
+  myFont(4, t);
   t = hours - t*10;
-  myFont(17, t);
+  myFont(20, t);
   
   t = minutes/10;
   myFont(40, t);
   t = minutes - t*10;
-  myFont(57, t);
+  myFont(56, t);
 
   t = seconds/10;
-  myFont(80, t);
+  myFont(92, t);
   t = seconds - t*10;
-  myFont(97, t);
+  myFont(108, t);
+
+
+
+  if (vcc < POWERMIN) {
+    ssd1306_setpos(0,0);  
+    ssd1306_numdec(vcc); 
+  } else {
+    vcc = 8.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
+    if (vcc > 7) {
+      ssd1306_draw_bmp(125, 0,  127, 1, barA1);
+      ssd1306_draw_bmp(125, 1,  127, 2, barA1);
+      ssd1306_draw_bmp(125, 2,  127, 3, barA1);
+      ssd1306_draw_bmp(125, 3,  127, 4, barA1);
+    } else if (vcc > 6) {
+      ssd1306_draw_bmp(125, 0,  127, 1, barA2);
+      ssd1306_draw_bmp(125, 1,  127, 2, barA1);
+      ssd1306_draw_bmp(125, 2,  127, 3, barA1);
+      ssd1306_draw_bmp(125, 3,  127, 4, barA1);
+    } else if (vcc > 5) {
+      ssd1306_draw_bmp(125, 0,  127, 1, barA3);
+      ssd1306_draw_bmp(125, 1,  127, 2, barA1);
+      ssd1306_draw_bmp(125, 2,  127, 3, barA1);
+      ssd1306_draw_bmp(125, 3,  127, 4, barA1);
+    } else if (vcc > 4) {
+      ssd1306_draw_bmp(125, 0,  127, 1, barA3);
+      ssd1306_draw_bmp(125, 1,  127, 2, barA2);
+      ssd1306_draw_bmp(125, 2,  127, 3, barA1);
+      ssd1306_draw_bmp(125, 3,  127, 4, barA1);
+    } else if (vcc > 3) {
+      ssd1306_draw_bmp(125, 0,  127, 1, barA3);
+      ssd1306_draw_bmp(125, 1,  127, 2, barA3);
+      ssd1306_draw_bmp(125, 2,  127, 3, barA1);
+      ssd1306_draw_bmp(125, 3,  127, 4, barA1);
+    } else if (vcc > 2) {
+      ssd1306_draw_bmp(125, 0,  127, 1, barA3);
+      ssd1306_draw_bmp(125, 1,  127, 2, barA3);
+      ssd1306_draw_bmp(125, 2,  127, 3, barA2);
+      ssd1306_draw_bmp(125, 3,  127, 4, barA1);
+    } else if (vcc > 1) {
+      ssd1306_draw_bmp(125, 0,  127, 1, barA3);
+      ssd1306_draw_bmp(125, 1,  127, 2, barA3);
+      ssd1306_draw_bmp(125, 2,  127, 3, barA3);
+      ssd1306_draw_bmp(125, 3,  127, 4, barA1);
+    } else {
+      ssd1306_draw_bmp(125, 0,  127, 1, barA3);
+      ssd1306_draw_bmp(125, 1,  127, 2, barA3);
+      ssd1306_draw_bmp(125, 2,  127, 3, barA3);
+      ssd1306_draw_bmp(125, 3,  127, 4, barA2);
+    }
+  }
 }
 
 inline void ticking() {
@@ -167,7 +193,6 @@ void setup() {
   power_adc_disable();
   power_timer1_disable();
   
-  ssd1306_init();
   ssd1306_fill(0);
   delay(500);
   ssd1306_setpos(0,0);
@@ -179,90 +204,17 @@ void loop() {
   
   if (onsec > OFFSEC) {
     ssd1306_off();
+    ssd1306_send_command(0x2E); // SSD1306_DEACTIVATE_SCROLL
     onsec = -1;
   }
   
-  if (onsec == -1 && tick==1 && seconds==1) {
-    // display refresh every 1 Minute if display is off
-    ssd1306_fill(0);
-  }
-  
-  if (
-    onsec != -1 ||                // do that stuff if display is on (not off)
-    (tick==1 && ( seconds==1 || seconds==31))  // or (for a faster refresh) do it every 30 sec
-  ) {
-    
-    // read vcc
-    power_adc_enable();
-    ADMUX = (0<<REFS0) | (12<<MUX0);
-    delay(20);
-    ADCSRA |= (1<<ADSC); // Convert
-    while (bit_is_set(ADCSRA,ADSC));
-    vcc = ADCW;
-    vcc = 1125300L / vcc;
-    power_adc_disable(); 
-    
-    bigDigital();
-  
-    if (vcc > POWERMAX || vcc < POWERMIN) {
-      ssd1306_setpos(36,3);  
-      ssd1306_numdec(vcc);
-      ssd1306_string(" mV");  
-    } else {
-      vcc = 8.0 * ( (float)(vcc - POWERMIN) / (float)(POWERMAX - POWERMIN) );
-      if (vcc > 7) {
-        ssd1306_draw_bmp(120, 0,  127, 1, barA1);
-        ssd1306_draw_bmp(120, 1,  127, 2, barB2);
-        ssd1306_draw_bmp(120, 2,  127, 3, barB2);
-        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
-      } else if (vcc > 6) {
-        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(120, 1,  127, 2, barB2);
-        ssd1306_draw_bmp(120, 2,  127, 3, barB2);
-        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
-      } else if (vcc > 5) {
-        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(120, 1,  127, 2, barB1);
-        ssd1306_draw_bmp(120, 2,  127, 3, barB2);
-        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
-      } else if (vcc > 4) {
-        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(120, 2,  127, 3, barB2);
-        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
-      } else if (vcc > 3) {
-        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(120, 2,  127, 3, barB1);
-        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
-      } else if (vcc > 2) {
-        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(120, 2,  127, 3, barB0);
-        ssd1306_draw_bmp(120, 3,  127, 4, barB2);
-      } else if (vcc > 1) {
-        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(120, 2,  127, 3, barB0);
-        ssd1306_draw_bmp(120, 3,  127, 4, barB1);
-      } else {
-        ssd1306_draw_bmp(120, 0,  127, 1, barA0);
-        ssd1306_draw_bmp(120, 1,  127, 2, barB0);
-        ssd1306_draw_bmp(120, 2,  127, 3, barB0);
-        ssd1306_draw_bmp(120, 3,  127, 4, barC0);
-      }
-    }
-    if (ledon == 2) digitalWrite(LEDPIN, tick%2==0);
-
+  if (ledon == 2) {
+    digitalWrite(LEDPIN, HIGH);
+    delay(50);
+    digitalWrite(LEDPIN, LOW);
+    delay(DELAY_QUAD-50);
   } else {
-    if (ledon == 2) {
-      digitalWrite(LEDPIN, HIGH);
-      delay(50);
-      digitalWrite(LEDPIN, LOW);
-      delay(DELAY_QUAD-50);
-    } else {
-      delay(DELAY_QUAD);
-    }
+    delay(DELAY_QUAD);
   }
 
   // semi long press: hours up
@@ -270,18 +222,27 @@ void loop() {
   if (digitalRead(BUTTON1) == LOW) {
     onsec = 0;
     ssd1306_on();
+    ssd1306_send_command(0x2E);
+    bigDigital();
+    scroll();
     
     delay(500);
     tick+=2;
-    if (digitalRead(BUTTON1) == LOW) {
+    
+    if (digitalRead(BUTTON1) == LOW) ssd1306_send_command(0x2E);
+    while (digitalRead(BUTTON1) == LOW) {
       hours = (hours+1)%24;
       seconds = 0;
+      bigDigital();
+      delay(200);
     }
+    
+    if (digitalRead(BUTTON2) == LOW) ssd1306_send_command(0x2E);
     while (digitalRead(BUTTON2) == LOW) {
       minutes = (minutes+1)%60;
       seconds = 0;
       bigDigital();
-      delay(300);
+      delay(200);
     }
   }
 
@@ -290,6 +251,9 @@ void loop() {
   if (digitalRead(BUTTON2) == LOW) {
     onsec = 0;
     ssd1306_on();
+    ssd1306_send_command(0x2E);
+    bigDigital();
+    scroll();
     
     delay(1000);
     tick+=4;
