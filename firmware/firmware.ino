@@ -7,6 +7,7 @@
 #include <avr/wdt.h>
 
 #include "Bold.h"
+#include "Hglas.h"
 using namespace Bold;
 
 // with 8Mhz -> 4h  :-(  4.1 V till 3.5  V
@@ -61,6 +62,31 @@ void myFont(byte x, byte b) {
   }
 }
 
+void myFont2(byte x, byte b) {
+  int y=0;
+  if (b == 0) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num0);
+  } else if (b == 1) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num1);
+  } else if (b == 2) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num2);
+  } else if (b == 3) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num3);
+  } else if (b == 4) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num4);
+  } else if (b == 5) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num5);
+  } else if (b == 6) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num6);
+  } else if (b == 7) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num7);
+  } else if (b == 8) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num8);
+  } else if (b == 9) {
+    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num9);
+  }
+}
+
 inline void readVcc() {
   // read vcc
   power_adc_enable();
@@ -104,7 +130,7 @@ inline void bigDigital() {
     
   if (tick != otick) {
     otick=tick;
-    myFont(111, tick);
+    myFont2(111, tick);
   }
 }
 

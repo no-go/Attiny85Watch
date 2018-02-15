@@ -14,4 +14,4 @@ This Branch:
  -  displays the Lipo power in mV (menu mode)
  -  Button 1: Display on (clock mode) or set hour/minutes
  -  Button 2: switch through clock, led on, menu mode (set hours), menu mode (set minutes)
- -  test time accurency: after more than 8h 3min+
+ -  time accurency: after more than 8h 3min+
