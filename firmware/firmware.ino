@@ -9,8 +9,8 @@
 #include "Bold.h"
 using namespace Bold;
 
-// with 8Mhz -> 4h  :-(  4.1 V till 3.5 V
-// with 1Mhz -> ??h      4.1 V till ?.? V
+// with 8Mhz -> 4h  :-(  4.1 V till 3.5  V
+// with 1Mhz -> 15h      4.1 V till 3.58 V
 
 #define LEDPIN   1
 #define BUTTON1  3
