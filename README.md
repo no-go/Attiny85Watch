@@ -25,7 +25,7 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
 ## Features: menu branch
 
 If you want a easier way to set the hours aund minutes, take a look to
-the menu branch:
+the [menu](https://github.com/no-go/Attiny85Watch/tree/menu) branch:
 
  -  Button 2: Display on for 5sec
  -  Button 1: switch trough Clock mode, LED on, Menu mode "set hour", Menu mode "set minute"
