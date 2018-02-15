@@ -21,13 +21,26 @@ Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 butto
  -  time accurency 7h +45sec to fast (please make your own check)
  -  4 different fonts
  -  test lipo life time (more than 14h)
- 
+
+## Features: menu branch
+
+If you want a easier way to set the hours aund minutes, take a look to
+the menu branch:
+
+ -  Button 2: Display on for 5sec
+ -  Button 1: switch trough Clock mode, LED on, Menu mode "set hour", Menu mode "set minute"
+     -  in Menu mode: you see power in mili Volts
+     -  in Menu mode: button 2 changes hour/minute
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=GaI7kfXpqJI" target="_blank"><img src="http://img.youtube.com/vi/GaI7kfXpqJI/0.jpg" 
+alt="Video menu branch" width="240" height="180" border="10" /></a>
+
 # future steps
 
  -  nice circuit / more details
  -  programming how-to
 
-# Images
+# Images (old, development)
 
 ![easy wired](img/backside.jpg)
 ![tiny size](img/tiny.jpg)
