@@ -6,9 +6,10 @@
 #include <avr/power.h>
 #include <avr/wdt.h>
 
-#include "Bold.h"
+//#include "Bold.h"
+#include "Normal.h"
 #include "Hglas.h"
-using namespace Bold;
+using namespace Normal;
 
 // with 8Mhz -> 4h  :-(  4.1 V till 3.5  V
 // with 1Mhz -> 15h      4.1 V till 3.58 V
@@ -24,6 +25,7 @@ int tickDelay = DELAY_TENTH;
 int hours   = 0;
 int minutes = 0;
 int seconds = 0;
+int alarms =  0;
 
 int onsec    = 0;
 byte tick    = 0;
@@ -141,7 +143,9 @@ inline void ticking() {
     if (onsec>=0 && onsec <= OFFSEC) onsec++;
   }
   
+  
   if (tick > 9) {
+    if (alarms > 1) alarms--;
     tick = tick % 10;
     if (seconds > 59) {
       minutes += seconds / 60;
@@ -176,6 +180,14 @@ void loop() {
   delay(tickDelay);
   ticking();
 
+  if (alarms==1) {
+    if(tick==3) {
+      digitalWrite(LEDPIN, HIGH);
+    } else {
+      digitalWrite(LEDPIN, LOW);
+    }
+  }
+  
   // --------------------------------------------------
   if (menu==0) {
     
@@ -201,7 +213,24 @@ void loop() {
   // --------------------------------------------------
   } else if (menu==1) {
     
-    digitalWrite(LEDPIN, HIGH);
+    if (onsec >= OFFSEC) {
+      ssd1306_off();
+      onsec = -1;
+      menu=0;
+      ohours=-1;
+      ominutes=-1;
+      oseconds=-1;
+    }
+
+    if (onsec==-1) onsec = 0;
+    
+    if (alarms==1) {
+      alarms = 0;
+    } else if (alarms > 1) {
+      ssd1306_setpos(0,0);
+      ssd1306_numdec(alarms);
+      ssd1306_string_font6x8(" s");      
+    }
     
   // --------------------------------------------------
   } else if (menu==2) {
@@ -225,18 +254,28 @@ void loop() {
       ssd1306_setpos(70,2);
       ssd1306_numdec(minutes);
       ssd1306_string_font6x8("  ");
+    }
+    
+  // --------------------------------------------------
+  } else if (menu==4) {
+    digitalWrite(LEDPIN, LOW);
+    if (digitalRead(BUTTON1) == LOW) {
+      alarms = (alarms+10)%360;
+      ssd1306_setpos(70,2);
+      ssd1306_numdec(alarms);
+      ssd1306_string_font6x8("  ");
     }    
   }
 
   if (digitalRead(BUTTON2) == LOW) {
     ssd1306_fill(0);
-    menu = (menu+1)%4;
+    menu = (menu+1)%5;
     if (menu==0) {
       // force refresh
       ohours=-1;
       ominutes=-1;
       oseconds=-1;
-    } else if(menu > 1) {
+    } else if(menu > 1 || (menu==1 && alarms>1)) {
       ssd1306_on();
       if (menu==2) {
         readVcc();
@@ -254,6 +293,14 @@ void loop() {
         ssd1306_string_font6x8("set minute:");
         ssd1306_setpos(70,2);
         ssd1306_numdec(minutes);
+        ssd1306_string_font6x8("  ");
+      } else if (menu==4) {
+        readVcc();
+        ssd1306_string_font6x8(" mV");
+        ssd1306_setpos(0,2);
+        ssd1306_string_font6x8("set alarm:");
+        ssd1306_setpos(70,2);
+        ssd1306_numdec(alarms);
         ssd1306_string_font6x8("  ");
       }
     }
