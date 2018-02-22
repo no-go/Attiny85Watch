@@ -137,6 +137,7 @@ inline void bigDigital() {
 }
 
 inline void ticking() {
+  delay(tickDelay);
   tick++;
   if (tick > 9) {
     seconds += tick/10;
@@ -177,7 +178,6 @@ void setup() {
 
 
 void loop() {
-  delay(tickDelay);
   ticking();
 
   if (alarms==1) {
@@ -229,7 +229,7 @@ void loop() {
     } else if (alarms > 1) {
       ssd1306_setpos(0,0);
       ssd1306_numdec(alarms);
-      ssd1306_string_font6x8(" s");      
+      ssd1306_string_font6x8(" s   ");      
     }
     
   // --------------------------------------------------
@@ -260,15 +260,22 @@ void loop() {
   } else if (menu==4) {
     digitalWrite(LEDPIN, LOW);
     if (digitalRead(BUTTON1) == LOW) {
-      alarms = (alarms+10)%360;
+      alarms = (((alarms/10)+1)%36)*10;
       ssd1306_setpos(70,2);
       ssd1306_numdec(alarms);
       ssd1306_string_font6x8("  ");
+      ticking();
     }    
+    if (tick==1) {
+      ssd1306_setpos(70,2);
+      ssd1306_numdec(alarms);
+      ssd1306_string_font6x8("  ");
+    }
   }
 
   if (digitalRead(BUTTON2) == LOW) {
     ssd1306_fill(0);
+    tickDelay = DELAY_TENTH;
     menu = (menu+1)%5;
     if (menu==0) {
       // force refresh

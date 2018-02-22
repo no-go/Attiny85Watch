@@ -30,6 +30,17 @@ I buy a 20 Dollar headset and use the small 65mAh lipo to shrink everything!
 ![easy wired](img/backside.jpg)
 ![tiny size](img/tiny.jpg)
 
+
+Vibration alarm: I use a BC108-C . V-motor + to RAW (3.7 till 4.1V) and
+V-motor - to the collector, GND to the emitter, LEDPIN to the basic.
+
+    ...xx..
+    ..x..xxxx
+    .x..E....x
+    .x.....B.x
+    .x..C....x
+    . xxxxxxx
+
 # Hint 1MHz and 8MHz
 
 Read and use the `8MHz.sh` and `1MHz.sh` Linux shell script to set ATtiny85 fuse bits.
