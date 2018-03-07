@@ -2,6 +2,7 @@
 #include "ssd1306xled.c"
 #include "num2str.h"
 #include "num2str.c"
+#include "Mag.h"
 #include <avr/sleep.h>
 #include <avr/power.h>
 #include <avr/wdt.h>
@@ -170,6 +171,8 @@ void setup() {
   sleep_bod_disable();
   power_adc_disable();
   power_timer1_disable();
+
+  mag_init();
   
   ssd1306_init();
   ssd1306_fill(0);
@@ -179,7 +182,7 @@ void setup() {
 
 void loop() {
   ticking();
-
+  
   if (alarms==1) {
     if(tick==3) {
       digitalWrite(LEDPIN, HIGH);
