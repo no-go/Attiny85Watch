@@ -12,12 +12,14 @@ alt="Video" width="240" height="180" border="10" /></a>
 This Branch:
 
  -  optimized for 1MHz (8Mhz needs more power)
- -  lifetime: more than 15h on 1MHz (65mAh Lipo after charging it)
  -  displays the Lipo power in mV (menu mode)
  -  Button 1: Display on (clock mode) or set hour/minutes
  -  Button 2: switch through clock, led on, menu mode (set hours), menu mode (set minutes)
- -  time accurency: after more than 8h 3min+
- -  10th of a second: a hour glas
+ -  1/8th of a second: a hour glas
+ -  CPU power down between every cycle of 120ms (with 128Hz clock)
+ -  time accurency: ?
+ -  lifetime: ? (65mAh Lipo after charging it)
+ 
 
 # Circuit
 

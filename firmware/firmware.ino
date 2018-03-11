@@ -18,9 +18,7 @@ using namespace Normal;
 #define BUTTON1  3
 #define BUTTON2  4
 
-#define         OFFSEC      5
-#define         DELAY_TENTH 100 // should be 100ms
-int tickDelay = DELAY_TENTH;
+#define         OFFSEC  5
 
 int hours   = 0;
 int minutes = 0;
@@ -82,10 +80,6 @@ void myFont2(byte x, byte b) {
     ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num6);
   } else if (b == 7) {
     ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num7);
-  } else if (b == 8) {
-    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num8);
-  } else if (b == 9) {
-    ssd1306_draw_bmp(x, 0, x+16, 8, Hglas::num9);
   }
 }
 
@@ -136,37 +130,10 @@ inline void bigDigital() {
   }
 }
 
-inline void ticking() {
-  delay(tickDelay);
-  tick++;
-  if (tick > 9) {
-    seconds += tick/10;
-    if (onsec>=0 && onsec <= OFFSEC) onsec++;
-  }
-  
-  
-  if (tick > 9) {
-    if (alarms > 1) alarms--;
-    tick = tick % 10;
-    if (seconds > 59) {
-      minutes += seconds / 60;
-      seconds  = seconds % 60;
-    }
-    if (minutes > 59) {
-      hours  += minutes / 60;
-      minutes = minutes % 60;
-    }
-    if (hours > 23) {
-      hours = hours % 24;
-    }
-  }
-}
-
 void setup() {
   pinMode(BUTTON1, INPUT_PULLUP);
   pinMode(BUTTON2, INPUT_PULLUP);
   pinMode(LEDPIN,  OUTPUT);
-  wdt_disable();
   sleep_bod_disable();
   power_adc_disable();
   power_timer1_disable();
@@ -174,12 +141,26 @@ void setup() {
   ssd1306_init();
   ssd1306_fill(0);
   delay(500);
+  
+  MCUSR = MCUSR & B11110111; // Reset flag disable, WDRF bit3 of MCUSR
+  WDTCR = WDTCR | B00011000; // set Bit 3+4 to set Prescaler
+  WDTCR = B00000011; // Watchdog Prescaler auf 16k setzen > ergibt ca. 120 ms
+  WDTCR = WDTCR | B01000000; // wdt enable
+  //MCUSR = MCUSR & B11110111;
+  
+//  ADCSRA = ADCSRA & B01111111; // ADC abschalten, ADEN bit7 zu 0
+//  ACSR = B10000000; // Analogen Comparator abschalten, ACD bit7 zu 1
+//  DIDR0 = DIDR0 | B00111111; // Digitale Eingangspuffer ausschalten, analoge Eingangs Pins 0-5 auf 1
 }
 
 
 void loop() {
-  ticking();
-
+    
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+  sleep_enable();
+  sleep_mode();
+  sleep_disable();
+  
   if (alarms==1) {
     if(tick==3) {
       digitalWrite(LEDPIN, HIGH);
@@ -194,13 +175,11 @@ void loop() {
     if (onsec >= OFFSEC) {
       digitalWrite(LEDPIN, LOW);
       ssd1306_off();
-      tickDelay = DELAY_TENTH;
       onsec = -1;
     } else {
       if (onsec >= 0) {
         digitalWrite(LEDPIN, LOW);
         bigDigital();
-        tickDelay = DELAY_TENTH -70;
       }
     }
     
@@ -264,7 +243,7 @@ void loop() {
       ssd1306_setpos(70,2);
       ssd1306_numdec(alarms);
       ssd1306_string_font6x8("  ");
-      ticking();
+      // delay(125)
     }    
     if (tick==1) {
       ssd1306_setpos(70,2);
@@ -275,7 +254,6 @@ void loop() {
 
   if (digitalRead(BUTTON2) == LOW) {
     ssd1306_fill(0);
-    tickDelay = DELAY_TENTH;
     menu = (menu+1)%5;
     if (menu==0) {
       // force refresh
@@ -310,6 +288,30 @@ void loop() {
         ssd1306_numdec(alarms);
         ssd1306_string_font6x8("  ");
       }
+    }
+  }
+}
+
+ISR(WDT_vect) {
+  tick++;
+  if (tick > 7) {
+    seconds += tick/8;
+    if (onsec>=0 && onsec <= OFFSEC) onsec++;
+  }
+  
+  if (tick > 7) {
+    if (alarms > 1) alarms--;
+    tick = tick % 8;
+    if (seconds > 59) {
+      minutes += seconds / 60;
+      seconds  = seconds % 60;
+    }
+    if (minutes > 59) {
+      hours  += minutes / 60;
+      minutes = minutes % 60;
+    }
+    if (hours > 23) {
+      hours = hours % 24;
     }
   }
 }
