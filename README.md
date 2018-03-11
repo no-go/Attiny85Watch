@@ -1,5 +1,8 @@
 # ATtiny85 Watch
 
+**magneto** HMC magnetometer works with tinywire, but ssd1306 oled not !!
+
+
 Use a ATtiny85 8pin AVR chip, a white LED, a 128x32 i2c oled display and 2 buttons for set hours and minutes as watch!
 
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=GaI7kfXpqJI" target="_blank"><img src="http://img.youtube.com/vi/GaI7kfXpqJI/0.jpg" 
