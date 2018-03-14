@@ -17,8 +17,8 @@ This Branch:
  -  Button 2: switch through clock, led on, menu mode (set hours), menu mode (set minutes)
  -  1/8th of a second: a hour glas
  -  CPU power down between every cycle of 120ms (with 128Hz clock)
- -  time accurency: ?
- -  lifetime: ? (65mAh Lipo after charging it)
+ -  time accurency: it was 25min in 8h. I think, I fix this
+ -  lifetime: above 46h (65mAh Lipo after charging it)
  
 
 # Circuit

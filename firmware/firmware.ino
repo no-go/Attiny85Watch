@@ -155,12 +155,16 @@ void setup() {
 
 
 void loop() {
+
+  if (alarms==1 && tick==3) {
+    delay(125);
+  } else {
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    sleep_enable();
+    sleep_mode();
+    sleep_disable();    
+  }
     
-  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-  sleep_enable();
-  sleep_mode();
-  sleep_disable();
-  
   if (alarms==1) {
     if(tick==3) {
       digitalWrite(LEDPIN, HIGH);
@@ -294,6 +298,9 @@ void loop() {
 
 ISR(WDT_vect) {
   tick++;
+  // fix speed (1/16 sec faster)
+  if (seconds%2 == 0 && tick==6) tick=7;
+  
   if (tick > 7) {
     seconds += tick/8;
     if (onsec>=0 && onsec <= OFFSEC) onsec++;
