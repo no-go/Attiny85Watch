@@ -11,9 +11,6 @@
 #include "Hglas.h"
 using namespace Normal;
 
-// with 8Mhz -> 4h  :-(  4.1 V till 3.5  V
-// with 1Mhz -> 15h      4.1 V till 3.58 V
-
 #define LEDPIN   1
 #define BUTTON1  3
 #define BUTTON2  4
@@ -298,8 +295,10 @@ void loop() {
 
 ISR(WDT_vect) {
   tick++;
-  // fix speed (1/16 sec faster)
-  if (seconds%2 == 0 && tick==6) tick=7;
+  // fix speed (1/16 sec faster) but not every 8sec (because it was 1sec every min to fast)
+  if ( ((seconds%2)==0) && (tick==6) && ((seconds%8)>0) ) {
+    tick=7;
+  }
   
   if (tick > 7) {
     seconds += tick/8;
