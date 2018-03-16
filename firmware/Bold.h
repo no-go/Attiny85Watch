@@ -72,7 +72,7 @@ const byte num0[] PROGMEM = {
 };
 
 const byte num1[] PROGMEM = {
-  0b0000000,
+  0b00000000,
   0b00000000,
   0b00000000,
   0b00000000,
