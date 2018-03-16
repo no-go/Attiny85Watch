@@ -6,16 +6,22 @@
 #include <avr/power.h>
 #include <avr/wdt.h>
 
-//#include "Bold.h"
+#include "Bold.h"
+#include "DotNumbers.h"
 #include "Normal.h"
+#include "FuturNumbers.h"
+
 #include "Hglas.h"
+
+// font
 using namespace Normal;
 
 #define LEDPIN   1
 #define BUTTON1  3
 #define BUTTON2  4
 
-#define         OFFSEC  5
+#define OFFSEC  5
+#define POWERWARN 3640
 
 int hours   = 0;
 int minutes = 0;
@@ -25,6 +31,7 @@ int alarms =  0;
 int onsec    = 0;
 byte tick    = 0;
 byte ledon   = 0;
+int vcc      = 3800;
 
 // old to detect refresh
 int ohours   = 23;
@@ -84,15 +91,12 @@ inline void readVcc() {
   // read vcc
   power_adc_enable();
   ADMUX = (0<<REFS0) | (12<<MUX0);
-  ssd1306_fill(0); // is a delay
+  delay(10);
   ADCSRA |= (1<<ADSC); // Convert
   while (bit_is_set(ADCSRA,ADSC));
-  int vcc = ADCW;
+  vcc = ADCW;
   vcc = 1125300L / vcc;
   power_adc_disable();
-
-  ssd1306_setpos(0,0);  
-  ssd1306_numdec(vcc); 
 }
 
 inline void bigDigital() {
@@ -123,7 +127,15 @@ inline void bigDigital() {
     
   if (tick != otick) {
     otick=tick;
-    myFont2(111, tick);
+    if (vcc < POWERWARN) {
+      if (tick%2==0) {
+        ssd1306_draw_bmp(111, 0, 127, 8, Hglas::bat);        
+      } else {
+        ssd1306_draw_bmp(111, 0, 127, 8, Hglas::nothing);
+      }
+    } else {
+      myFont2(111, tick);
+    }
   }
 }
 
@@ -143,8 +155,8 @@ void setup() {
   WDTCR = WDTCR | B00011000; // set Bit 3+4 to set Prescaler
   WDTCR = B00000011; // Watchdog Prescaler auf 16k setzen > ergibt ca. 120 ms
   WDTCR = WDTCR | B01000000; // wdt enable
+
   //MCUSR = MCUSR & B11110111;
-  
 //  ADCSRA = ADCSRA & B01111111; // ADC abschalten, ADEN bit7 zu 0
 //  ACSR = B10000000; // Analogen Comparator abschalten, ACD bit7 zu 1
 //  DIDR0 = DIDR0 | B00111111; // Digitale Eingangspuffer ausschalten, analoge Eingangs Pins 0-5 auf 1
@@ -188,6 +200,7 @@ void loop() {
       onsec = 0;
       ssd1306_on();
       bigDigital();
+      readVcc();
     } 
 
   // --------------------------------------------------
@@ -265,6 +278,8 @@ void loop() {
       ssd1306_on();
       if (menu==2) {
         readVcc();
+        ssd1306_setpos(0,0);  
+        ssd1306_numdec(vcc); 
         ssd1306_string_font6x8(" mV");
         ssd1306_setpos(0,2);
         ssd1306_string_font6x8("set hour:");
@@ -274,6 +289,8 @@ void loop() {
         
       } else if (menu==3) {
         readVcc();
+        ssd1306_setpos(0,0);  
+        ssd1306_numdec(vcc); 
         ssd1306_string_font6x8(" mV");
         ssd1306_setpos(0,2);
         ssd1306_string_font6x8("set minute:");
@@ -282,6 +299,8 @@ void loop() {
         ssd1306_string_font6x8("  ");
       } else if (menu==4) {
         readVcc();
+        ssd1306_setpos(0,0);  
+        ssd1306_numdec(vcc); 
         ssd1306_string_font6x8(" mV");
         ssd1306_setpos(0,2);
         ssd1306_string_font6x8("set alarm:");
@@ -298,11 +317,13 @@ ISR(WDT_vect) {
   // fix speed (1/16 sec faster)
   // but not every 8sec (because it was 1sec every min to fast)
   // but we lost 1min in 3h: fix it with adding 1/3 every 60s (similar to 1/8 ever 20sec = 3times in 1minute)
+  // and I need i bit more time any minute (I still lost 1sec every 1 hour)
   if ( (tick==6) &&
-    // Verschlucke 1/8 sec jede gerade sekunde, es sei denn, sie ist durch 8 teilbar und nicht 18, 36 oder 56 
+    // Verschlucke 1/8 sec jede gerade sekunde, es sei denn, sie ist durch 8 teilbar und nicht 18, 30, 36 oder 56 
     ((seconds%2)==0) && 
     ((seconds%8)>0) && 
-    ((seconds!=18) || (seconds!=36) || (seconds!=56) )
+    ( (seconds!=18) || (seconds!=36) || (seconds!=56) ||
+      (seconds!=30) )
   ) {
     tick=7;
   }
