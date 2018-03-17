@@ -317,16 +317,16 @@ ISR(WDT_vect) {
   // fix speed (1/16 sec faster)
   // but not every 8sec (because it was 1sec every min to fast)
   // but we lost 1min in 3h: fix it with adding 1/3 every 60s (similar to 1/8 ever 20sec = 3times in 1minute)
-  // and I need i bit more time any minute (I still lost 1sec every 1 hour)
   if ( (tick==6) &&
-    // Verschlucke 1/8 sec jede gerade sekunde, es sei denn, sie ist durch 8 teilbar und nicht 18, 30, 36 oder 56 
+    // Verschlucke 1/8 sec jede gerade sekunde, es sei denn, sie ist durch 8 teilbar und nicht 18, 36 oder 56 
     ((seconds%2)==0) && 
     ((seconds%8)>0) && 
-    ( (seconds!=18) || (seconds!=36) || (seconds!=56) ||
-      (seconds!=30) )
+    ( (seconds!=18) || (seconds!=36) || (seconds!=56) )
   ) {
     tick=7;
   }
+  // and I need i bit more time any minute (I still lost 1sec every 1 hour)
+  if ( (tick==4) && (seconds==30) && (minutes%7==0) ) tick=5;
   
   if (tick > 7) {
     seconds += tick/8;
