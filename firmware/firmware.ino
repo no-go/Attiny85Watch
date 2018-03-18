@@ -321,12 +321,10 @@ ISR(WDT_vect) {
     // Verschlucke 1/8 sec jede gerade sekunde, es sei denn, sie ist durch 8 teilbar und nicht 18, 36 oder 56 
     ((seconds%2)==0) && 
     ((seconds%8)>0) && 
-    ( (seconds!=18) || (seconds!=36) || (seconds!=56) )
+    ( (seconds!=18) || (seconds!=36) )
   ) {
     tick=7;
   }
-  // and I need i bit more time any minute (I still lost 1sec every 1 hour)
-  if ( (tick==4) && (seconds==30) && (minutes%7==0) ) tick=5;
   
   if (tick > 7) {
     seconds += tick/8;
